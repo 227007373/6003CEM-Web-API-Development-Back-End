@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const { UserRegisterModel } = require('../models/model');
+const { UserModel } = require('../models/model');
+const jwt = require('jsonwebtoken');
 module.exports = {
-    users: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const existingUser = yield UserRegisterModel.findOne({ username: req.body.username });
+    usersRegister: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const existingUser = yield UserModel.findOne({ username: req.body.username });
         if (existingUser) {
             return res.status(400).json({
                 status: 'error',
@@ -22,7 +23,7 @@ module.exports = {
             });
         }
         const { username, password } = req.body;
-        const data = new UserRegisterModel({
+        const data = new UserModel({
             username: req.body.username,
             password: req.body.password,
         });
@@ -52,9 +53,31 @@ module.exports = {
                 message: 'Password must includes more than 7 charactors.',
             });
         }
-        console.log(res.statusCode);
         const dataToSave = yield data.save();
         res.status(200).json({ status: 'success', code: res.statusCode, data: dataToSave });
         res.send();
+    }),
+    usersLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { username, passowrd } = req.body;
+        const user = yield UserModel.findOne({ username: username });
+        if (!user) {
+            return res.status(401).send('Username or password is incorrect');
+        }
+        // check password
+        if (req.body.password !== user.password) {
+            return res.status(401).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Username or password is incorrect',
+            });
+        }
+        const token = jwt.sign({ _id: user._id }, 'secret_key');
+        res.header('auth-token', token).json({
+            status: 'success',
+            code: res.statusCode,
+            data: { token: token },
+            message: 'Login successful',
+        });
     }),
 };

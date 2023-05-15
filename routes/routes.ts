@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, Router } from 'express';
 const { UserRegisterModel } = require('../models/model');
-const { users } = require('./user');
+const { usersRegister, usersLogin } = require('./user');
+const { catInsert } = require('./cats');
 const router = Router();
 //Post Method
 router.post('/post', (req: Request, res: Response) => {
@@ -23,5 +24,7 @@ router.delete('/delete/:id', (req: Request, res: Response) => {
     res.send('Delete by ID API');
 });
 
-router.post('/user/register', users);
+router.post('/user/register', usersRegister);
+router.post('/user/login', usersLogin);
+router.post('/cat/insert', catInsert);
 module.exports = router;

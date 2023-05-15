@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const { UserRegisterModel } = require('../models/model');
-const { users } = require('./user');
+const { usersRegister, usersLogin } = require('./user');
+const { catInsert } = require('./cats');
 const router = (0, express_1.Router)();
 //Post Method
 router.post('/post', (req, res) => {
@@ -24,5 +25,7 @@ router.patch('/update/:id', (req, res) => {
 router.delete('/delete/:id', (req, res) => {
     res.send('Delete by ID API');
 });
-router.post('/user/register', users);
+router.post('/user/register', usersRegister);
+router.post('/user/login', usersLogin);
+router.post('/cat/insert', catInsert);
 module.exports = router;
