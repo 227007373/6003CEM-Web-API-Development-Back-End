@@ -9,9 +9,48 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose = require('mongoose');
 const { CatModel } = require('../models/model');
 const jwt = require('jsonwebtoken');
+const ObjectId = require('mongodb').ObjectId;
 module.exports = {
+    catList: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const existingCat = yield CatModel.find();
+        res.send(existingCat);
+    }),
+    catDelete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { id } = req.body;
+        // check if id is a valid ObjectId
+        let objectId;
+        try {
+            objectId = new mongoose.Types.ObjectId(id);
+        }
+        catch (err) {
+            return res.status(400).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Invalid id',
+            });
+        }
+        // check if item exists
+        const item = yield CatModel.findById(objectId);
+        if (!item) {
+            return res.status(400).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Id not found',
+            });
+        }
+        yield CatModel.findByIdAndDelete(objectId);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: item,
+            message: 'Item deleted successfully',
+        });
+    }),
     catInsert: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { name, breeds, age, gender } = req.body;
         if (!name) {

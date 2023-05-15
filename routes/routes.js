@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const { UserRegisterModel } = require('../models/model');
 const { usersRegister, usersLogin } = require('./user');
-const { catInsert } = require('./cats');
+const { catList, catDelete, catInsert } = require('./cats');
 const router = (0, express_1.Router)();
 //Post Method
 router.post('/post', (req, res) => {
@@ -28,4 +28,6 @@ router.delete('/delete/:id', (req, res) => {
 router.post('/user/register', usersRegister);
 router.post('/user/login', usersLogin);
 router.post('/cat/insert', catInsert);
+router.get('/cat/list', catList);
+router.delete('/cat/delete', catDelete);
 module.exports = router;
