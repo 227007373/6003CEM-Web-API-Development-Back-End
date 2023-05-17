@@ -13,19 +13,19 @@ let UserSchema = new mongoose.Schema({
 let CatSchema = new mongoose.Schema({
     name: {
         type: 'string',
-        required: true,
+        required: false,
     },
     breeds: {
         type: 'string',
-        required: true,
+        required: false,
     },
     age: {
         type: 'number',
-        required: true,
+        required: false,
     },
     gender: {
         type: 'string',
-        required: true,
+        required: false,
     },
 });
 const userModel = mongoose.model('User', UserSchema);

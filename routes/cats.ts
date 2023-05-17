@@ -42,6 +42,25 @@ module.exports = {
             message: 'Item deleted successfully',
         });
     },
+    catUpdate: async (req: Request, res: Response) => {
+        const { name, breeds, age, gender } = req.body;
+        const id = req.params.id;
+        // check if id is a valid ObjectId
+        let objectId;
+        try {
+            objectId = new mongoose.Types.ObjectId(id);
+        } catch (err) {
+            return res.status(400).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Invalid id',
+            });
+        }
+        const data = req.body;
+        const dataToSave = await CatModel.updateOne({ _id: objectId }, { $set: data });
+        res.status(200).json({ status: 'success', code: res.statusCode, data: req.body });
+    },
     catInsert: async (req: Request, res: Response) => {
         const { name, breeds, age, gender } = req.body;
         if (!name) {
