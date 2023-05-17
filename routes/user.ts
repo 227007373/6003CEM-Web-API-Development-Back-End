@@ -1,5 +1,9 @@
 import express, { Express, Request, Response, Router } from 'express';
 const { UserModel } = require('../models/model');
+import dotenv from 'dotenv';
+// get the environment variables
+dotenv.config();
+const mongoString: any = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 module.exports = {
     usersRegister: async (req: Request, res: Response) => {
@@ -65,7 +69,7 @@ module.exports = {
                 message: 'Username or password is incorrect',
             });
         }
-        const token = jwt.sign({ _id: user._id }, 'secret_key');
+        const token = jwt.sign({ _id: user._id }, mongoString, { expiresIn: '1h' });
         res.header('auth-token', token).json({
             status: 'success',
             code: res.statusCode,

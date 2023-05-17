@@ -8,8 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const { UserModel } = require('../models/model');
+const dotenv_1 = __importDefault(require("dotenv"));
+// get the environment variables
+dotenv_1.default.config();
+const mongoString = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 module.exports = {
     usersRegister: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -72,7 +79,7 @@ module.exports = {
                 message: 'Username or password is incorrect',
             });
         }
-        const token = jwt.sign({ _id: user._id }, 'secret_key');
+        const token = jwt.sign({ _id: user._id }, mongoString, { expiresIn: '1h' });
         res.header('auth-token', token).json({
             status: 'success',
             code: res.statusCode,

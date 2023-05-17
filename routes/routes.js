@@ -1,9 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const { UserRegisterModel } = require('../models/model');
 const { usersRegister, usersLogin } = require('./user');
-const { catList, catDelete, catInsert } = require('./cats');
+const { catList, catDelete, catInsert, catUpdate } = require('./cats');
+const dotenv_1 = __importDefault(require("dotenv"));
+// get the environment variables
+dotenv_1.default.config();
+const mongoString = process.env.JWT_SECRET;
+const jwt = require('jsonwebtoken');
 const router = (0, express_1.Router)();
 //Post Method
 router.post('/post', (req, res) => {
@@ -25,9 +33,27 @@ router.patch('/update/:id', (req, res) => {
 router.delete('/delete/:id', (req, res) => {
     res.send('Delete by ID API');
 });
+const verify = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null)
+        return res.sendStatus(401);
+    jwt.verify(token, mongoString, (err, user) => {
+        if (err) {
+            return res.status(401).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Unauthorized',
+            });
+        }
+        next();
+    });
+};
 router.post('/user/register', usersRegister);
 router.post('/user/login', usersLogin);
-router.post('/cat/insert', catInsert);
+router.post('/cat/insert', verify, catInsert);
 router.get('/cat/list', catList);
-router.delete('/cat/delete', catDelete);
+router.delete('/cat/delete', verify, catDelete);
+router.put('/cat/update/:id', verify, catUpdate);
 module.exports = router;
