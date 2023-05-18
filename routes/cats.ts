@@ -8,6 +8,14 @@ module.exports = {
         const existingCat = await CatModel.find();
         res.send(existingCat);
     },
+    catSearch: async (req: Request, res: Response) => {
+        const q = String(req.query.q);
+        const searchTerm = q;
+        const regex = new RegExp(searchTerm, 'i');
+        let data = await CatModel.find({ name: regex });
+        console.log(data);
+        res.send(data);
+    },
     catDelete: async (req: Request, res: Response) => {
         const { id } = req.body;
 

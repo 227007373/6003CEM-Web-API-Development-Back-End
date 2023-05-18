@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const { UserRegisterModel } = require('../models/model');
 const { usersRegister, usersLogin } = require('./user');
-const { catList, catDelete, catInsert, catUpdate } = require('./cats');
+const { catList, catDelete, catInsert, catUpdate, catSearch } = require('./cats');
 const dotenv_1 = __importDefault(require("dotenv"));
 // get the environment variables
 dotenv_1.default.config();
@@ -53,7 +53,8 @@ const verify = (req, res, next) => {
 router.post('/user/register', usersRegister);
 router.post('/user/login', usersLogin);
 router.post('/cat/insert', verify, catInsert);
-router.get('/cat/list', catList);
 router.delete('/cat/delete', verify, catDelete);
 router.put('/cat/update/:id', verify, catUpdate);
+router.get('/cat/list', catList);
+router.get('/cat/search', catSearch);
 module.exports = router;

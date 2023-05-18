@@ -18,6 +18,14 @@ module.exports = {
         const existingCat = yield CatModel.find();
         res.send(existingCat);
     }),
+    catSearch: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const q = String(req.query.q);
+        const searchTerm = q;
+        const regex = new RegExp(searchTerm, 'i');
+        let data = yield CatModel.find({ name: regex });
+        console.log(data);
+        res.send(data);
+    }),
     catDelete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { id } = req.body;
         // check if id is a valid ObjectId

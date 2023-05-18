@@ -2,7 +2,7 @@ import express, { Express, Request, Response, Router } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
 const { UserRegisterModel } = require('../models/model');
 const { usersRegister, usersLogin } = require('./user');
-const { catList, catDelete, catInsert, catUpdate } = require('./cats');
+const { catList, catDelete, catInsert, catUpdate, catSearch } = require('./cats');
 import dotenv from 'dotenv';
 // get the environment variables
 dotenv.config();
@@ -48,8 +48,9 @@ const verify = (req: Request, res: Response, next: any) => {
 router.post('/user/register', usersRegister);
 router.post('/user/login', usersLogin);
 router.post('/cat/insert', verify, catInsert);
-router.get('/cat/list', catList);
 router.delete('/cat/delete', verify, catDelete);
 router.put('/cat/update/:id', verify, catUpdate);
+router.get('/cat/list', catList);
+router.get('/cat/search', catSearch);
 
 module.exports = router;
