@@ -13,8 +13,21 @@ module.exports = {
         const searchTerm = q;
         const regex = new RegExp(searchTerm, 'i');
         let data = await CatModel.find({ name: regex });
-        console.log(data);
-        res.send(data);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: data,
+        });
+    },
+    catFilter: async (req: Request, res: Response) => {
+        const q = req.body;
+        const FilterTerm = q;
+        let data = await CatModel.find(FilterTerm);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: data,
+        });
     },
     catDelete: async (req: Request, res: Response) => {
         const { id } = req.body;

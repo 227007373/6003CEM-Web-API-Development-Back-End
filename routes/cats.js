@@ -23,8 +23,21 @@ module.exports = {
         const searchTerm = q;
         const regex = new RegExp(searchTerm, 'i');
         let data = yield CatModel.find({ name: regex });
-        console.log(data);
-        res.send(data);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: data,
+        });
+    }),
+    catFilter: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const q = req.body;
+        const FilterTerm = q;
+        let data = yield CatModel.find(FilterTerm);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: data,
+        });
     }),
     catDelete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { id } = req.body;
