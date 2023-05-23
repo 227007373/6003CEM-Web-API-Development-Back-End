@@ -82,6 +82,60 @@ module.exports = {
         const dataToSave = await CatModel.updateOne({ _id: objectId }, { $set: data });
         res.status(200).json({ status: 'success', code: res.statusCode, data: req.body });
     },
+    catBreeds: async (req: Request, res: Response) => {
+        const item = await CatModel.aggregate([
+            {
+                $group: {
+                    _id: '$breeds',
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    breeds: { $push: '$_id' },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    breeds: 1,
+                },
+            },
+        ]);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: item,
+            message: 'Item deleted successfully',
+        });
+    },
+    catGender: async (req: Request, res: Response) => {
+        const item = await CatModel.aggregate([
+            {
+                $group: {
+                    _id: '$gender',
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    gender: { $push: '$_id' },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    gender: 1,
+                },
+            },
+        ]);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: item,
+            message: 'Item deleted successfully',
+        });
+    },
     catInsert: async (req: Request, res: Response) => {
         const { name, breeds, age, gender } = req.body;
         if (!name) {

@@ -68,7 +68,12 @@ module.exports = {
         const { username, passowrd } = req.body;
         const user = yield UserModel.findOne({ username: username });
         if (!user) {
-            return res.status(401).send('Username or password is incorrect');
+            return res.status(401).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Username or password is incorrect',
+            });
         }
         // check password
         if (req.body.password !== user.password) {

@@ -57,7 +57,12 @@ module.exports = {
 
         const user = await UserModel.findOne({ username: username });
         if (!user) {
-            return res.status(401).send('Username or password is incorrect');
+            return res.status(401).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Username or password is incorrect',
+            });
         }
 
         // check password

@@ -92,6 +92,60 @@ module.exports = {
         const dataToSave = yield CatModel.updateOne({ _id: objectId }, { $set: data });
         res.status(200).json({ status: 'success', code: res.statusCode, data: req.body });
     }),
+    catBreeds: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const item = yield CatModel.aggregate([
+            {
+                $group: {
+                    _id: '$breeds',
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    breeds: { $push: '$_id' },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    breeds: 1,
+                },
+            },
+        ]);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: item,
+            message: 'Item deleted successfully',
+        });
+    }),
+    catGender: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const item = yield CatModel.aggregate([
+            {
+                $group: {
+                    _id: '$gender',
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    gender: { $push: '$_id' },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    gender: 1,
+                },
+            },
+        ]);
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: item,
+            message: 'Item deleted successfully',
+        });
+    }),
     catInsert: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { name, breeds, age, gender } = req.body;
         if (!name) {

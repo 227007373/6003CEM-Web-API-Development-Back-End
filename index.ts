@@ -1,10 +1,12 @@
 import express, { Express, Request, Response } from 'express';
 import mongoose, { Schema, model, connect } from 'mongoose';
 import dotenv from 'dotenv';
+const cors = require('cors');
 // get the environment variables
 dotenv.config();
-const mongoString : any = process.env.DATABASE_URL;
-const app : Express = express();
+const mongoString: any = process.env.DATABASE_URL;
+const app: Express = express();
+app.use(cors());
 mongoose.connect(mongoString);
 const database = mongoose.connection;
 const routes = require('./routes/routes');
