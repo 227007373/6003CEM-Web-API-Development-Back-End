@@ -1,10 +1,12 @@
 import express, { Express, Request, Response, Router } from 'express';
 const { UserModel } = require('../models/model');
 import dotenv from 'dotenv';
+const mongoose = require('mongoose');
 // get the environment variables
 dotenv.config();
 const mongoString: any = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
+import { JsonWebTokenError } from 'jsonwebtoken';
 module.exports = {
     usersRegister: async (req: Request, res: Response) => {
         const existingUser = await UserModel.findOne({ username: req.body.username });
@@ -20,6 +22,7 @@ module.exports = {
         const data = new UserModel({
             username: req.body.username,
             password: req.body.password,
+            isStaff: req.body.staffCode == '0000',
         });
         const hasUppercase = /[A-Z]/.test(password);
         const hasLowercase = /[a-z]/.test(password);
@@ -52,10 +55,39 @@ module.exports = {
         res.status(200).json({ status: 'success', code: res.statusCode, data: dataToSave });
         res.send();
     },
+    userFind: async (req: Request, res: Response) => {
+        const { token } = req.body;
+        if (token == null) return res.sendStatus(401);
+        jwt.verify(token, mongoString, (err: JsonWebTokenError, user: any) => {
+            let objectId;
+            console.log(user);
+            try {
+                objectId = new mongoose.Types.ObjectId(user._id);
+            } catch (err) {
+                return res.status(400).json({
+                    status: 'error',
+                    code: res.statusCode,
+                    data: null,
+                    message: 'Invalid id',
+                });
+            }
+            mongoose
+                .model('User')
+                .findById(objectId)
+                .then((r: any) => {
+                    res.status(200).json({
+                        status: 'success',
+                        code: res.statusCode,
+                        data: { username: r.username, isStaff: r.isStaff, favourite: r.favourite },
+                    });
+                });
+        });
+    },
     usersLogin: async (req: Request, res: Response) => {
         const { username, passowrd } = req.body;
-
+        console.log(req.body);
         const user = await UserModel.findOne({ username: username });
+
         if (!user) {
             return res.status(401).json({
                 status: 'error',
@@ -78,8 +110,8 @@ module.exports = {
         res.header('auth-token', token).json({
             status: 'success',
             code: res.statusCode,
-            data: { token: token },
-            message: 'Login successful',
+            data: { token: token, isStaff: user.isStaff, favourite: user.favourite },
+            message: 'Login asd successful',
         });
     },
 };

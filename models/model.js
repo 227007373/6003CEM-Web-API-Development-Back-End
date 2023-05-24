@@ -9,6 +9,14 @@ let UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    isStaff: {
+        type: Boolean,
+        required: false,
+    },
+    favourite: {
+        type: Array,
+        required: false,
+    },
 });
 let CatSchema = new mongoose.Schema({
     name: {

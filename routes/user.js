@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const { UserModel } = require('../models/model');
 const dotenv_1 = __importDefault(require("dotenv"));
+const mongoose = require('mongoose');
 // get the environment variables
 dotenv_1.default.config();
 const mongoString = process.env.JWT_SECRET;
@@ -33,6 +34,7 @@ module.exports = {
         const data = new UserModel({
             username: req.body.username,
             password: req.body.password,
+            isStaff: req.body.staffCode == '0000',
         });
         const hasUppercase = /[A-Z]/.test(password);
         const hasLowercase = /[a-z]/.test(password);
@@ -64,8 +66,39 @@ module.exports = {
         res.status(200).json({ status: 'success', code: res.statusCode, data: dataToSave });
         res.send();
     }),
+    userFind: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { token } = req.body;
+        if (token == null)
+            return res.sendStatus(401);
+        jwt.verify(token, mongoString, (err, user) => {
+            let objectId;
+            console.log(user);
+            try {
+                objectId = new mongoose.Types.ObjectId(user._id);
+            }
+            catch (err) {
+                return res.status(400).json({
+                    status: 'error',
+                    code: res.statusCode,
+                    data: null,
+                    message: 'Invalid id',
+                });
+            }
+            mongoose
+                .model('User')
+                .findById(objectId)
+                .then((r) => {
+                res.status(200).json({
+                    status: 'success',
+                    code: res.statusCode,
+                    data: { username: r.username, isStaff: r.isStaff, favourite: r.favourite },
+                });
+            });
+        });
+    }),
     usersLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { username, passowrd } = req.body;
+        console.log(req.body);
         const user = yield UserModel.findOne({ username: username });
         if (!user) {
             return res.status(401).json({
@@ -88,8 +121,8 @@ module.exports = {
         res.header('auth-token', token).json({
             status: 'success',
             code: res.statusCode,
-            data: { token: token },
-            message: 'Login successful',
+            data: { token: token, isStaff: user.isStaff, favourite: user.favourite },
+            message: 'Login asd successful',
         });
     }),
 };

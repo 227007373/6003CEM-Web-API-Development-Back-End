@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require('mongoose');
-const { CatModel } = require('../models/model');
+const { CatModel, UserModel } = require('../models/model');
 const jwt = require('jsonwebtoken');
 const ObjectId = require('mongodb').ObjectId;
 module.exports = {
@@ -33,10 +33,43 @@ module.exports = {
         const q = req.body;
         const FilterTerm = q;
         let data = yield CatModel.find(FilterTerm);
+        console.log(req.body);
         res.status(200).json({
             status: 'success',
             code: res.statusCode,
             data: data,
+        });
+    }),
+    catFavourite: (req, res, user) => __awaiter(void 0, void 0, void 0, function* () {
+        const { id, username } = req.body;
+        let objectId;
+        try {
+            objectId = new mongoose.Types.ObjectId(id);
+        }
+        catch (err) {
+            return res.status(400).json({
+                status: 'error',
+                code: res.statusCode,
+                data: null,
+                message: 'Invalid id',
+            });
+        }
+        mongoose.model('Cat').findById(objectId);
+        let test = new mongoose.model('User');
+        const u = yield test.findOne({ username: username });
+        let liked = false;
+        if (!u.favourite.includes(objectId)) {
+            liked = true;
+            yield test.updateOne({ username: username }, { $push: { favourite: objectId } }, { upsert: false });
+        }
+        else {
+            liked = false;
+            yield test.updateOne({ username: username }, { $pull: { favourite: objectId } }, { upsert: false });
+        }
+        res.status(200).json({
+            status: 'success',
+            code: res.statusCode,
+            data: { liked: liked },
         });
     }),
     catDelete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
