@@ -19,24 +19,31 @@ let UserSchema = new mongoose.Schema({
     },
 });
 
-let CatSchema = new mongoose.Schema({
-    name: {
-        type: 'string',
-        required: false,
+let CatSchema = new mongoose.Schema(
+    {
+        image: {
+            type: 'string',
+            required: false,
+        },
+        name: {
+            type: 'string',
+            required: false,
+        },
+        breeds: {
+            type: 'string',
+            required: false,
+        },
+        age: {
+            type: 'number',
+            required: false,
+        },
+        gender: {
+            type: 'string',
+            required: false,
+        },
     },
-    breeds: {
-        type: 'string',
-        required: false,
-    },
-    age: {
-        type: 'number',
-        required: false,
-    },
-    gender: {
-        type: 'string',
-        required: false,
-    },
-});
+    { versionKey: false }
+);
 const userModel = mongoose.model('User', UserSchema);
 const catModel = mongoose.model('Cat', CatSchema);
 module.exports = {

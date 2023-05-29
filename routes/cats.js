@@ -40,6 +40,12 @@ module.exports = {
             data: data,
         });
     }),
+    catGetFavourite: (req, res, user) => __awaiter(void 0, void 0, void 0, function* () {
+        const { username } = req.body;
+        let model = new mongoose.model('User');
+        const result = yield model.findOne({ username: username });
+        res.send(result.favourite);
+    }),
     catFavourite: (req, res, user) => __awaiter(void 0, void 0, void 0, function* () {
         const { id, username } = req.body;
         let objectId;
@@ -54,17 +60,22 @@ module.exports = {
                 message: 'Invalid id',
             });
         }
-        mongoose.model('Cat').findById(objectId);
-        let test = new mongoose.model('User');
-        const u = yield test.findOne({ username: username });
+        let find = yield mongoose.model('Cat').findById(objectId);
+        console.log(find);
+        let model = new mongoose.model('User');
+        const u = yield model.findOne({ username: username });
         let liked = false;
-        if (!u.favourite.includes(objectId)) {
+        const foundObject = u.favourite.find((obj) => {
+            return JSON.stringify(obj._id) == JSON.stringify(objectId);
+        });
+        if (!foundObject) {
+            console.log(foundObject);
             liked = true;
-            yield test.updateOne({ username: username }, { $push: { favourite: objectId } }, { upsert: false });
+            yield model.updateOne({ username: username }, { $push: { favourite: find } }, { upsert: false });
         }
         else {
             liked = false;
-            yield test.updateOne({ username: username }, { $pull: { favourite: objectId } }, { upsert: false });
+            yield model.updateOne({ username: username }, { $pull: { favourite: find } }, { upsert: false });
         }
         res.status(200).json({
             status: 'success',
@@ -98,6 +109,9 @@ module.exports = {
             });
         }
         yield CatModel.findByIdAndDelete(objectId);
+        yield UserModel.updateMany({ 'favourite._id': objectId }, // Filter documents with 'banana' in 'favourite.food'
+        { $pull: { favourite: { _id: objectId } } } // Remove 'banana' from 'favourite.food'
+        );
         res.status(200).json({
             status: 'success',
             code: res.statusCode,
@@ -123,6 +137,7 @@ module.exports = {
         }
         const data = req.body;
         const dataToSave = yield CatModel.updateOne({ _id: objectId }, { $set: data });
+        yield UserModel.updateMany({ 'favourite._id': objectId }, { $set: { 'favourite.$[elem]': Object.assign({ _id: objectId }, data) } }, { arrayFilters: [{ 'elem._id': objectId }], omitUndefined: true });
         res.status(200).json({ status: 'success', code: res.statusCode, data: req.body });
     }),
     catBreeds: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -180,7 +195,7 @@ module.exports = {
         });
     }),
     catInsert: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { name, breeds, age, gender } = req.body;
+        const { image, name, breeds, age, gender } = req.body;
         if (!name) {
             return res.status(400).send(`name is required`);
         }
@@ -194,11 +209,12 @@ module.exports = {
             return res.status(400).send(`gender is required`);
         }
         const data = new CatModel({
+            image: image,
             name: name,
             breeds: breeds,
             age: age,
             gender: gender,
-        });
+        }, { versionKey: false });
         const dataToSave = yield data.save();
         res.status(200).json({ status: 'success', code: res.statusCode, data: dataToSave });
     }),

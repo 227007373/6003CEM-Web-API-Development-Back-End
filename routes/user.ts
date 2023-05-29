@@ -36,7 +36,7 @@ module.exports = {
             });
         }
         if (username.length <= 7) {
-            return res.status(400).json({
+            return res.status(403).json({
                 status: 'error',
                 code: res.statusCode,
                 data: null,
@@ -44,7 +44,7 @@ module.exports = {
             });
         }
         if (password.length <= 7) {
-            return res.status(400).json({
+            return res.status(403).json({
                 status: 'error',
                 code: res.statusCode,
                 data: null,
@@ -110,7 +110,7 @@ module.exports = {
         res.header('auth-token', token).json({
             status: 'success',
             code: res.statusCode,
-            data: { token: token, isStaff: user.isStaff, favourite: user.favourite },
+            data: { token: token, isStaff: user.isStaff, favourite: user.favourite, username: user.username },
             message: 'Login asd successful',
         });
     },

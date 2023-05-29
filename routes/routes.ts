@@ -13,6 +13,7 @@ const {
     catBreeds,
     catGender,
     catFavourite,
+    catGetFavourite,
 } = require('./cats');
 import dotenv from 'dotenv';
 const mongoose = require('mongoose');
@@ -45,9 +46,11 @@ router.delete('/delete/:id', (req: Request, res: Response) => {
 const verify = (req: Request, res: Response, next: any) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
+    console.log(req.headers);
     if (token == null) return res.sendStatus(401);
     jwt.verify(token, mongoString, (err: JsonWebTokenError, user: any) => {
         if (err) {
+            console.log(err);
             return res.status(401).json({
                 status: 'error',
                 code: res.statusCode,
@@ -83,6 +86,22 @@ const verify = (req: Request, res: Response, next: any) => {
             });
     });
 };
+/**
+ * @openapi
+ * /api/user/register:
+ *   get:
+ *     summary: Register for a user
+ *     description: user can register as a normal user or a staff by register with the staff code
+ *     responses:
+ *       200:
+ *         description: register successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
 router.post('/user/register', usersRegister);
 router.post('/user/login', usersLogin);
 router.post('/user/getUser', userFind);
@@ -95,5 +114,6 @@ router.post('/cat/filter', catFilter);
 router.get('/cat/breeds', catBreeds);
 router.get('/cat/gender', catGender);
 router.put('/cat/favourite', catFavourite);
+router.get('/cat/getFavourite', catGetFavourite);
 
 module.exports = router;

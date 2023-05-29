@@ -7,7 +7,7 @@ const express_1 = require("express");
 const { UserModel } = require('../models/model');
 const { UserRegisterModel } = require('../models/model');
 const { usersRegister, usersLogin, userFind } = require('./user');
-const { catList, catDelete, catInsert, catUpdate, catSearch, catFilter, catBreeds, catGender, catFavourite, } = require('./cats');
+const { catList, catDelete, catInsert, catUpdate, catSearch, catFilter, catBreeds, catGender, catFavourite, catGetFavourite, } = require('./cats');
 const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose = require('mongoose');
 // get the environment variables
@@ -38,10 +38,12 @@ router.delete('/delete/:id', (req, res) => {
 const verify = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
+    console.log(req.headers);
     if (token == null)
         return res.sendStatus(401);
     jwt.verify(token, mongoString, (err, user) => {
         if (err) {
+            console.log(err);
             return res.status(401).json({
                 status: 'error',
                 code: res.statusCode,
@@ -79,6 +81,22 @@ const verify = (req, res, next) => {
         });
     });
 };
+/**
+ * @openapi
+ * /api/user/register:
+ *   get:
+ *     summary: Register for a user
+ *     description: user can register as a normal user or a staff by register with the staff code
+ *     responses:
+ *       200:
+ *         description: register successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
 router.post('/user/register', usersRegister);
 router.post('/user/login', usersLogin);
 router.post('/user/getUser', userFind);
@@ -91,4 +109,5 @@ router.post('/cat/filter', catFilter);
 router.get('/cat/breeds', catBreeds);
 router.get('/cat/gender', catGender);
 router.put('/cat/favourite', catFavourite);
+router.get('/cat/getFavourite', catGetFavourite);
 module.exports = router;
