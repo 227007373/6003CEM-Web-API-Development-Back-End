@@ -89,31 +89,391 @@ const verify = (req: Request, res: Response, next: any) => {
 /**
  * @openapi
  * /api/user/register:
- *   get:
+ *   post:
  *     summary: Register for a user
+ *     tags:
+ *       - User
  *     description: user can register as a normal user or a staff by register with the staff code
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             username: k5089898
+ *             password: Kk61561690
+ *             staffCode:  "0000"
  *     responses:
  *       200:
  *         description: register successful
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The user ID.
+ *                 username:
+ *                   type: string
+ *                   description: The username.
+ *                 isStaff:
+ *                   type: boolean
+ *                   description: whether the user is a staff
+ *       403:
+ *         description: username or password not meet the requirement
  */
 router.post('/user/register', usersRegister);
+/**
+ * @openapi
+ * /api/user/login:
+ *   post:
+ *     summary: Login for a user
+ *     tags:
+ *       - User
+ *     description: user login
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             username: k5089898
+ *             password: Kk61561690
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The user ID.
+ *                 username:
+ *                   type: string
+ *                   description: The username.
+ *                 isStaff:
+ *                   type: boolean
+ *                   description: whether the user is a staff
+ *                 token:
+ *                   type: string
+ *                   description: token that to identify user
+ *                 favourite:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                   description: array that shows user's favourite cats
+ *       401:
+ *         description: Username or password is incorrect
+ */
 router.post('/user/login', usersLogin);
+/**
+ * @openapi
+ * /api/user/getUser:
+ *   post:
+ *     summary: get user details
+ *     tags:
+ *       - User
+ *     description: user can register as a normal user or a staff by register with the staff code
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDZlMWI0ZjkzZmYzNTk4NjljM2RiYzYiLCJpYXQiOjE2ODUzODAxNzksImV4cCI6MTY4NTM4Mzc3OX0.Cec_gQHMVoVW6mu_iIpbYF6IUhCth8-8LE3WSwlNoKI
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 favourite:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                   description: array that shows user's favourite cats
+ *                 username:
+ *                   type: string
+ *                   description: The username.
+ *                 isStaff:
+ *                   type: boolean
+ *                   description: whether the user is a staff
+ *       400:
+ *         description: token invalid
+ */
 router.post('/user/getUser', userFind);
+/**
+ * @openapi
+ * /api/cat/insert:
+ *   post:
+ *     summary: insert cat datails
+ *     tags:
+ *       - Cat
+ *     description: ONLY STAFF can insert cat details
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             name: test
+ *             breeds: Ragdoll
+ *             age: 3
+ *             gender: boy
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 breeds:
+ *                   type: string
+ *                 age:
+ *                   type: integer
+ *                 gender:
+ *                   type: string
+ *                 _id:
+ *                   type: string
+ *       401:
+ *         description: staff only
+ */
 router.post('/cat/insert', verify, catInsert);
+/**
+ * @openapi
+ * /api/cat/delete:
+ *   delete:
+ *     summary: delete cat
+ *     tags:
+ *       - Cat
+ *     description: ONLY STAFF can delete cat details
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             id: '646269bc22d5989e603bfd59'
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 breeds:
+ *                   type: string
+ *                 age:
+ *                   type: integer
+ *                 gender:
+ *                   type: string
+ *                 _id:
+ *                   type: string
+ *       404:
+ *         description: Id not found
+ */
 router.delete('/cat/delete', verify, catDelete);
+/**
+ * @openapi
+ * /api/update/:id:
+ *   put:
+ *     summary: update cat
+ *     tags:
+ *       - Cat
+ *     description: ONLY STAFF can update cat details
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
+ *          minimum: 1
+ *        description: The cat ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             name: test
+ *             breeds: Ragdoll
+ *             age: 3
+ *             gender: boy
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 breeds:
+ *                   type: string
+ *                 age:
+ *                   type: integer
+ *                 gender:
+ *                   type: string
+ *                 _id:
+ *                   type: string
+ *       400:
+ *         description: Invalid id
+ */
 router.put('/cat/update/:id', verify, catUpdate);
+/**
+ * @openapi
+ * /api/cat/list:
+ *   get:
+ *     summary: get cat list
+ *     tags:
+ *       - Cat
+ *     description: show all cats
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 image:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 breeds:
+ *                   type: string
+ *                 age:
+ *                   type: integer
+ *                 gender:
+ *                   type: string
+ *                 _id:
+ *                   type: string
+ */
 router.get('/cat/list', catList);
+/**
+ * @openapi
+ * /api/cat/sarch:
+ *   get:
+ *     summary: get cat list
+ *     tags:
+ *       - Cat
+ *     description: show all cats
+ *     parameters:
+ *      - in: query
+ *        name: q
+ *        required: true
+ *        schema:
+ *          type: string
+ *          minimum: 1
+ *        description: search cat by name
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 image:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 breeds:
+ *                   type: string
+ *                 age:
+ *                   type: integer
+ *                 gender:
+ *                   type: string
+ *                 _id:
+ *                   type: string
+ */
 router.get('/cat/search', catSearch);
+/**
+ * @openapi
+ * /api/cat/filter:
+ *   post:
+ *     summary: get cat list
+ *     tags:
+ *       - Cat
+ *     description: show all cats
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             gender: boy
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 image:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 breeds:
+ *                   type: string
+ *                 age:
+ *                   type: integer
+ *                 gender:
+ *                   type: string
+ *                 _id:
+ *                   type: string
+ */
 router.post('/cat/filter', catFilter);
 router.get('/cat/breeds', catBreeds);
 router.get('/cat/gender', catGender);
+/**
+ * @openapi
+ * /api/cat/filter:
+ *   put:
+ *     summary: get user favourite
+ *     tags:
+ *       - Cat
+ *     description: show user favourite
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *           example:
+ *             id: 6466735024bd834c64b51a40
+ *             username: k5089898
+ *     responses:
+ *       200:
+ *         description: success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 liked:
+ *                   type: boolean
+ */
 router.put('/cat/favourite', catFavourite);
-router.get('/cat/getFavourite', catGetFavourite);
 
 module.exports = router;

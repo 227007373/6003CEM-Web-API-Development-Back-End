@@ -90,7 +90,7 @@ module.exports = {
         // check if item exists
         const item = await CatModel.findById(objectId);
         if (!item) {
-            return res.status(400).json({
+            return res.status(404).json({
                 status: 'error',
                 code: res.statusCode,
                 data: null,
