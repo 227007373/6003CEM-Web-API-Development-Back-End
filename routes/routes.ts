@@ -46,11 +46,9 @@ router.delete('/delete/:id', (req: Request, res: Response) => {
 const verify = (req: Request, res: Response, next: any) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    console.log(req.headers);
     if (token == null) return res.sendStatus(401);
     jwt.verify(token, mongoString, (err: JsonWebTokenError, user: any) => {
         if (err) {
-            console.log(err);
             return res.status(401).json({
                 status: 'error',
                 code: res.statusCode,

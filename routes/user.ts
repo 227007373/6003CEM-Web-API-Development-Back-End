@@ -60,7 +60,6 @@ module.exports = {
         if (token == null) return res.sendStatus(401);
         jwt.verify(token, mongoString, (err: JsonWebTokenError, user: any) => {
             let objectId;
-            console.log(user);
             try {
                 objectId = new mongoose.Types.ObjectId(user._id);
             } catch (err) {
@@ -85,7 +84,6 @@ module.exports = {
     },
     usersLogin: async (req: Request, res: Response) => {
         const { username, passowrd } = req.body;
-        console.log(req.body);
         const user = await UserModel.findOne({ username: username });
 
         if (!user) {

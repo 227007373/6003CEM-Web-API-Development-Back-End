@@ -72,7 +72,6 @@ module.exports = {
             return res.sendStatus(401);
         jwt.verify(token, mongoString, (err, user) => {
             let objectId;
-            console.log(user);
             try {
                 objectId = new mongoose.Types.ObjectId(user._id);
             }
@@ -98,7 +97,6 @@ module.exports = {
     }),
     usersLogin: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { username, passowrd } = req.body;
-        console.log(req.body);
         const user = yield UserModel.findOne({ username: username });
         if (!user) {
             return res.status(401).json({

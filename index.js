@@ -18,9 +18,7 @@ mongoose_1.default.connect(mongoString);
 const database = mongoose_1.default.connection;
 const routes = require('./routes/routes');
 //check if the database connected
-database.on('error', (err) => {
-    console.log(err);
-});
+database.on('error', (err) => { });
 database.once('connected', () => {
     console.log('Database connected');
 });
@@ -29,3 +27,4 @@ app.use('/api', routes);
 app.listen(3000, () => {
     console.log(`Server Started at ${3000} ${mongoString}`);
 });
+module.exports = app;

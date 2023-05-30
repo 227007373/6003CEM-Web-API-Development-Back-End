@@ -33,7 +33,6 @@ module.exports = {
         const q = req.body;
         const FilterTerm = q;
         let data = yield CatModel.find(FilterTerm);
-        console.log(req.body);
         res.status(200).json({
             status: 'success',
             code: res.statusCode,
@@ -61,7 +60,6 @@ module.exports = {
             });
         }
         let find = yield mongoose.model('Cat').findById(objectId);
-        console.log(find);
         let model = new mongoose.model('User');
         const u = yield model.findOne({ username: username });
         let liked = false;
@@ -69,7 +67,6 @@ module.exports = {
             return JSON.stringify(obj._id) == JSON.stringify(objectId);
         });
         if (!foundObject) {
-            console.log(foundObject);
             liked = true;
             yield model.updateOne({ username: username }, { $push: { favourite: find } }, { upsert: false });
         }
